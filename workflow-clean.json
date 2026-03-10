@@ -1,0 +1,357 @@
+{
+  "name": "📋 Daily Briefing Aggregator",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "your-briefing-endpoint",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0000-0000-0000-000000000000",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-112, 512]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {
+          "q": "newer_than:1d"
+        }
+      },
+      "id": "gmail-primary",
+      "name": "Gmail — Primary",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [208, 208]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {
+          "q": "newer_than:1d"
+        }
+      },
+      "id": "gmail-work",
+      "name": "Gmail — Work",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [208, 400]
+    },
+    {
+      "parameters": {
+        "mailbox": {
+          "__rl": true,
+          "mode": "list",
+          "value": "INBOX"
+        },
+        "limit": 50
+      },
+      "type": "n8n-nodes-imap-ai.imap",
+      "typeVersion": 1,
+      "position": [208, 608],
+      "id": "imap-additional",
+      "name": "IMAP — Additional Email"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": "Primary Calendar"
+        },
+        "limit": 20,
+        "timeMin": "={{ $now.startOf('day').toISO() }}",
+        "timeMax": "={{ $now.endOf('day').toISO() }}",
+        "options": {
+          "orderBy": "startTime"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [208, 800],
+      "id": "calendar-primary",
+      "name": "Calendar — Primary Today"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": "Work Calendar"
+        },
+        "limit": 20,
+        "timeMin": "={{ $now.startOf('day').toISO() }}",
+        "timeMax": "={{ $now.endOf('day').toISO() }}",
+        "options": {
+          "orderBy": "startTime"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [208, 1008],
+      "id": "calendar-work",
+      "name": "Calendar — Work Today"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": "Primary Calendar"
+        },
+        "limit": 1,
+        "timeMin": "={{ $now.plus(1, 'days').startOf('day').toISO() }}",
+        "timeMax": "={{ $now.plus(1, 'days').endOf('day').toISO() }}",
+        "options": {
+          "orderBy": "startTime"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [208, 1200],
+      "id": "calendar-tomorrow",
+      "name": "Calendar — Tomorrow First"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s1",
+              "name": "_source",
+              "value": "gmail_primary",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "tag-gmail-primary",
+      "name": "Tag: Gmail Primary",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [448, 208]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s2",
+              "name": "_source",
+              "value": "gmail_work",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "tag-gmail-work",
+      "name": "Tag: Gmail Work",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [448, 400]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s3",
+              "name": "_source",
+              "value": "imap_additional",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "tag-imap-additional",
+      "name": "Tag: IMAP Additional",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [448, 608]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s4",
+              "name": "_source",
+              "value": "gcal_primary",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "tag-gcal-primary",
+      "name": "Tag: GCal Primary",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [448, 800]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s5",
+              "name": "_source",
+              "value": "gcal_work",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "tag-gcal-work",
+      "name": "Tag: GCal Work",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [448, 1008]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s6",
+              "name": "_source",
+              "value": "gcal_tomorrow",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "tag-gcal-tomorrow",
+      "name": "Tag: GCal Tomorrow",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [448, 1200]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($input.first().json) }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              { "name": "Content-Type", "value": "application/json" },
+              { "name": "Access-Control-Allow-Origin", "value": "*" },
+              { "name": "Access-Control-Allow-Methods", "value": "GET, OPTIONS" },
+              { "name": "Access-Control-Allow-Headers", "value": "Content-Type" }
+            ]
+          }
+        }
+      },
+      "id": "respond-webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [2208, 400]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: false, data: null, error: 'Briefing generation failed: ' + ($input.first().json.message || $input.first().json.errorMessage || 'unknown error') }) }}",
+        "options": {
+          "responseCode": 500,
+          "responseHeaders": {
+            "entries": [
+              { "name": "Content-Type", "value": "application/json" },
+              { "name": "Access-Control-Allow-Origin", "value": "*" },
+              { "name": "Access-Control-Allow-Methods", "value": "GET, OPTIONS" },
+              { "name": "Access-Control-Allow-Headers", "value": "Content-Type" }
+            ]
+          }
+        }
+      },
+      "id": "respond-error",
+      "name": "Respond Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [2208, 608]
+    },
+    {
+      "parameters": {
+        "jsCode": "// === Daily Briefing Aggregator ===\n// Aggregates emails and calendar events from multiple sources\n// CUSTOMIZE: Update VIP_EMAILS, VIP_NAMES, and keywords for your needs\n\nconst now = new Date();\nconst _errors = [];\n\n// === CUSTOMIZE: VIP Contacts ===\n// Add email addresses of people whose messages should always be flagged\nconst VIP_EMAILS = [\n  'boss@company.com',\n  'important-client@example.com',\n  'spouse@family.com'\n];\n\nconst VIP_NAMES = {\n  'boss@company.com': 'Your Boss',\n  'important-client@example.com': 'Important Client',\n  'spouse@family.com': 'Spouse'\n};\n\n// === CUSTOMIZE: High Priority Keywords ===\n// Emails containing these words get flagged HIGH priority\nconst HIGH_PRIORITY_KEYWORDS = [\n  'urgent', 'ASAP', 'time-sensitive', 'deadline', 'expires',\n  'expiring', 'immediately', 'action required', 'signature needed',\n  'sign by', 'due by', 'past due', 'emergency', 'critical'\n];\n\n// === CUSTOMIZE: Medium Priority Keywords ===\nconst MEDIUM_PRIORITY_KEYWORDS = [\n  'important', 'review', 'follow up', 'reminder', 'meeting',\n  'schedule', 'confirm', 'approval', 'request', 'update'\n];\n\n// === Helper Functions ===\nfunction isVipSender(fromField) {\n  const fromLower = (fromField || '').toLowerCase();\n  return VIP_EMAILS.some(vip => fromLower.includes(vip));\n}\n\nfunction getVipName(fromField) {\n  const fromLower = (fromField || '').toLowerCase();\n  for (const [email, name] of Object.entries(VIP_NAMES)) {\n    if (fromLower.includes(email)) return name;\n  }\n  return null;\n}\n\nfunction matchKeyword(subject, snippet, keywords) {\n  const text = ((subject || '') + ' ' + (snippet || '')).toLowerCase();\n  return keywords.find(kw => text.includes(kw.toLowerCase())) || null;\n}\n\nfunction flagPriority(email) {\n  if (isVipSender(email.from)) {\n    email.priority = 'VIP';\n    email.priority_reason = 'VIP contact: ' + (getVipName(email.from) || email.from);\n  } else {\n    const highMatch = matchKeyword(email.subject, email.snippet, HIGH_PRIORITY_KEYWORDS);\n    if (highMatch) {\n      email.priority = 'HIGH';\n      email.priority_reason = 'Keyword: ' + highMatch;\n    } else {\n      const medMatch = matchKeyword(email.subject, email.snippet, MEDIUM_PRIORITY_KEYWORDS);\n      if (medMatch) {\n        email.priority = 'MEDIUM';\n        email.priority_reason = 'Keyword: ' + medMatch;\n      } else {\n        email.priority = 'NORMAL';\n        email.priority_reason = '';\n      }\n    }\n  }\n  return email;\n}\n\n// === Parse Gmail messages ===\nfunction parseGmailMessage(msg) {\n  const j = msg.json || {};\n  return {\n    id: j.id || '',\n    from: j.From || j.from || '',\n    subject: j.Subject || j.subject || '(no subject)',\n    date: j.Date || j.date || j.internalDate || '',\n    snippet: j.snippet || '',\n    is_unread: (j.labelIds || j.labels || []).some(l =>\n      (typeof l === 'string' ? l : l.id || '') === 'UNREAD'\n    ),\n    labels: (j.labelIds || j.labels || []).map(l =>\n      typeof l === 'string' ? l : l.id || l.name || ''\n    ),\n    thread_id: j.threadId || ''\n  };\n}\n\n// === Parse IMAP messages ===\nfunction parseImapMessage(msg) {\n  const j = msg.json || {};\n  return {\n    from: j.from || j.header?.from?.[0] || '',\n    subject: j.subject || j.header?.subject?.[0] || '',\n    date: j.date || j.header?.date?.[0] || '',\n    snippet: (j.text || j.textPlain || j.body || '').substring(0, 200),\n    is_unread: true\n  };\n}\n\n// === Parse calendar events ===\nfunction parseCalendarEvent(evt, source) {\n  const j = evt.json || {};\n  let videoLink = '';\n  if (j.conferenceData?.entryPoints) {\n    const video = j.conferenceData.entryPoints.find(e => e.entryPointType === 'video');\n    if (video) videoLink = video.uri;\n  }\n  if (!videoLink && j.hangoutLink) videoLink = j.hangoutLink;\n  return {\n    source: source,\n    title: j.summary || j.title || '',\n    start: j.start?.dateTime || j.start?.date || j.start || '',\n    end: j.end?.dateTime || j.end?.date || j.end || '',\n    attendees: (j.attendees || []).map(a => ({\n      email: a.email, name: a.displayName || '', status: a.responseStatus || ''\n    })),\n    location: j.location || '',\n    video_link: videoLink,\n    description: (j.description || '').substring(0, 500),\n    is_all_day: !!(j.start?.date && !j.start?.dateTime)\n  };\n}\n\n// === Collect items by _source tag ===\nconst allItems = $input.all() || [];\n\nfunction getTaggedItems(sourceTag) {\n  try {\n    return allItems.filter(i => i.json?._source === sourceTag);\n  } catch(e) {\n    _errors.push({ source: sourceTag, error: e.message });\n    return [];\n  }\n}\n\n// === Process each source ===\nlet gmailPrimary = [], gmailWork = [], imapAdditional = [];\nlet calPrimary = [], calWork = [], calTomorrow = [];\n\ntry { gmailPrimary = getTaggedItems('gmail_primary').map(parseGmailMessage).map(flagPriority); }\ncatch(e) { _errors.push({ source: 'gmail_primary', error: e.message }); }\n\ntry { gmailWork = getTaggedItems('gmail_work').map(parseGmailMessage).map(flagPriority); }\ncatch(e) { _errors.push({ source: 'gmail_work', error: e.message }); }\n\ntry { imapAdditional = getTaggedItems('imap_additional').map(parseImapMessage).map(flagPriority); }\ncatch(e) { _errors.push({ source: 'imap_additional', error: e.message }); }\n\ntry { calPrimary = getTaggedItems('gcal_primary').map(e => parseCalendarEvent(e, 'primary')); }\ncatch(e) { _errors.push({ source: 'gcal_primary', error: e.message }); }\n\ntry { calWork = getTaggedItems('gcal_work').map(e => parseCalendarEvent(e, 'work')); }\ncatch(e) { _errors.push({ source: 'gcal_work', error: e.message }); }\n\ntry { calTomorrow = getTaggedItems('gcal_tomorrow').map(e => parseCalendarEvent(e, 'primary')); }\ncatch(e) { _errors.push({ source: 'gcal_tomorrow', error: e.message }); }\n\n// === Compute stats ===\nconst unreadPrimary = gmailPrimary.filter(e => e.is_unread).length;\nconst unreadWork = gmailWork.filter(e => e.is_unread).length;\nconst unreadAdditional = imapAdditional.length;\n\nconst allEmails = [...gmailPrimary, ...gmailWork, ...imapAdditional];\nconst priorityEmails = allEmails.filter(e =>\n  e.priority === 'VIP' || e.priority === 'HIGH' || e.priority === 'MEDIUM'\n);\n\nconst allCalToday = [...calPrimary, ...calWork].sort((a, b) =>\n  new Date(a.start) - new Date(b.start)\n);\n\nconst upcomingMeetings = allCalToday.filter(e =>\n  !e.is_all_day && new Date(e.start) > now\n);\nconst nextMeetingMinutes = upcomingMeetings.length > 0\n  ? Math.round((new Date(upcomingMeetings[0].start) - now) / 60000)\n  : null;\n\n// === Build response ===\nreturn [{\n  json: {\n    success: true,\n    data: {\n      generated_at: now.toISOString(),\n      period: 'last_24_hours',\n      email: {\n        primary_gmail: gmailPrimary,\n        work_gmail: gmailWork,\n        additional_imap: imapAdditional\n      },\n      priority_emails: priorityEmails,\n      calendar: {\n        today: allCalToday,\n        tomorrow_first: calTomorrow.length > 0 ? calTomorrow[0] : null\n      },\n      summary: {\n        total_unread: unreadPrimary + unreadWork + unreadAdditional,\n        unread_by_account: {\n          primary_gmail: unreadPrimary,\n          work_gmail: unreadWork,\n          additional_imap: unreadAdditional\n        },\n        priority_count: priorityEmails.length,\n        meetings_today: allCalToday.length,\n        next_meeting_in_minutes: nextMeetingMinutes,\n        next_meeting: upcomingMeetings.length > 0\n          ? upcomingMeetings[0].title + ' at ' + upcomingMeetings[0].start\n          : 'No upcoming meetings today'\n      },\n      _errors: _errors,\n      _sources_ok: 6 - _errors.length,\n      _sources_total: 6\n    },\n    error: null\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1968, 464],
+      "id": "build-briefing-payload",
+      "name": "Build Briefing Payload",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "numberInputs": 6
+      },
+      "id": "merge-wait-all",
+      "name": "Wait For All Sources",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [1760, 512]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          { "node": "Gmail — Primary", "type": "main", "index": 0 },
+          { "node": "Gmail — Work", "type": "main", "index": 0 },
+          { "node": "IMAP — Additional Email", "type": "main", "index": 0 },
+          { "node": "Calendar — Primary Today", "type": "main", "index": 0 },
+          { "node": "Calendar — Work Today", "type": "main", "index": 0 },
+          { "node": "Calendar — Tomorrow First", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Gmail — Primary": { "main": [[{ "node": "Tag: Gmail Primary", "type": "main", "index": 0 }]] },
+    "Gmail — Work": { "main": [[{ "node": "Tag: Gmail Work", "type": "main", "index": 0 }]] },
+    "IMAP — Additional Email": { "main": [[{ "node": "Tag: IMAP Additional", "type": "main", "index": 0 }]] },
+    "Calendar — Primary Today": { "main": [[{ "node": "Tag: GCal Primary", "type": "main", "index": 0 }]] },
+    "Calendar — Work Today": { "main": [[{ "node": "Tag: GCal Work", "type": "main", "index": 0 }]] },
+    "Calendar — Tomorrow First": { "main": [[{ "node": "Tag: GCal Tomorrow", "type": "main", "index": 0 }]] },
+    "Tag: Gmail Primary": { "main": [[{ "node": "Wait For All Sources", "type": "main", "index": 0 }]] },
+    "Tag: Gmail Work": { "main": [[{ "node": "Wait For All Sources", "type": "main", "index": 1 }]] },
+    "Tag: IMAP Additional": { "main": [[{ "node": "Wait For All Sources", "type": "main", "index": 2 }]] },
+    "Tag: GCal Primary": { "main": [[{ "node": "Wait For All Sources", "type": "main", "index": 3 }]] },
+    "Tag: GCal Work": { "main": [[{ "node": "Wait For All Sources", "type": "main", "index": 4 }]] },
+    "Tag: GCal Tomorrow": { "main": [[{ "node": "Wait For All Sources", "type": "main", "index": 5 }]] },
+    "Build Briefing Payload": {
+      "main": [
+        [{ "node": "Respond to Webhook", "type": "main", "index": 0 }],
+        [{ "node": "Respond Error", "type": "main", "index": 0 }]
+      ]
+    },
+    "Wait For All Sources": { "main": [[{ "node": "Build Briefing Payload", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}
