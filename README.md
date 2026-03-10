@@ -348,12 +348,13 @@ MIT License — use it however you want.
 
 Created by [Tony Self](https://techtony.co) — AI automation for business operators.
 
-Part of **The Invisible Department** — building AI systems that work while you sleep.
+Part of **[The Invisible Department](https://invisibledepartment.com)** — building AI systems that work while you sleep.
 
 ---
 
 ## Questions?
 
-- 🐦 Twitter: [@anthonyself](https://twitter.com/anthonyself)
+- 📧 Email: [Tony@TechTony.co](mailto:Tony@TechTony.co)
+- 🌐 Website: [TechTony.co](https://techtony.co)
 - 💼 LinkedIn: [anthonyself](https://linkedin.com/in/anthonyself)
-- 🌐 Website: [techtony.co](https://techtony.co)
+- 📞 Phone: +1 310.901.1000
